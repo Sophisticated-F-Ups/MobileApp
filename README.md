@@ -1,5 +1,7 @@
 ### How to use this program
-1. Download the app from []https://github.com/Sophisticated-F-Ups/MobileApp/
+1. Download the android app from [here](https://github.com/Sophisticated-F-Ups/MobileApp/releases/tag/v1.0.0)
+2. Install the downloaded android app
+3. Start the application.
 
 ### Participants
 
