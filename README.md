@@ -1,3 +1,6 @@
+### How to use this program
+1. Download the app from []https://github.com/Sophisticated-F-Ups/MobileApp/
+
 ### Participants
 
 1.
