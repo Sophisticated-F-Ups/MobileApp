@@ -7,6 +7,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:sophisticated_f_ups/Transcribed%20Text%20Pages/transcribeTextPage.dart';
 import 'package:video_player/video_player.dart';
 
 import 'viewSelectedFile.dart';
@@ -22,6 +23,8 @@ class _UploadFileState extends State<UploadFile> {
   bool fileSelected = false;
   String fileSelectedPath = "";
   bool disableSendButton = false;
+  String buttonText = "Get Transcription";
+  Map decodedFile = {};
 
   @override
   Widget build(BuildContext context) {
@@ -192,18 +195,21 @@ class _UploadFileState extends State<UploadFile> {
                         borderRadius: BorderRadius.circular(100),
                       ))),
                   onPressed: !disableSendButton
-                      ? () {
+                      ? () async {
                           // print("SENDING FILE");
-                          upload(File(fileSelectedPath));
-                          setState(() {
-                            disableSendButton = true;
-                          });
+                          await upload(File(fileSelectedPath), context);
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => TranscribedText(
+                                        decodedFile: decodedFile,
+                                      )));
                         }
                       : null,
                   child: RichText(
-                    text: const TextSpan(
-                      text: "Get Transcription!",
-                      style: TextStyle(
+                    text: TextSpan(
+                      text: buttonText,
+                      style: const TextStyle(
                         fontSize: 20,
                         color: Colors.white,
                         fontWeight: FontWeight.bold,
@@ -219,7 +225,11 @@ class _UploadFileState extends State<UploadFile> {
     );
   }
 
-  upload(File file) async {
+  upload(File file, BuildContext context) async {
+    setState(() {
+      disableSendButton = true;
+      buttonText = "Loading...";
+    });
     // open a bytestream
     // ignore: deprecated_member_use
     var stream = http.ByteStream(DelegatingStream.typed(file.openRead()));
@@ -236,10 +246,12 @@ class _UploadFileState extends State<UploadFile> {
     var multipartFile = http.MultipartFile('file', stream, length,
         filename: basename(file.path));
 
+    print(multipartFile.contentType);
+    print(multipartFile.field);
+    print(multipartFile.filename);
+
     // add file to multipart
     request.files.add(multipartFile);
-
-    Map decodeFile = {};
 
     // send
     var response = await request.send();
@@ -248,10 +260,13 @@ class _UploadFileState extends State<UploadFile> {
 
     // listen for response
     response.stream.transform(utf8.decoder).listen((value) {
-      decodeFile = jsonDecode(value);
-      print(decodeFile["text"]);
+      print(decodedFile["summerize"]);
+      print(decodedFile["text"]);
+
       setState(() {
         disableSendButton = false;
+        buttonText = "Get Transcription!";
+        decodedFile = jsonDecode(value);
       });
     });
   }
