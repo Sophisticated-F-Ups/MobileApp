@@ -7,7 +7,7 @@
 
 1.
  - name: Satvik Garg
- - email: mwa121@sfu.ca
+ - email: sga145@sfu.ca
 
 2.
  - name: Matt Wong
